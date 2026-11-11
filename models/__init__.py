@@ -1,0 +1,7 @@
+from models.categoria_produto_model import CategoriaProdutoModel
+from models.fornecedor_model import FornecedorModel
+from models.item_movimentacao_model import ItemMovimentacaoModel
+from models.movimentacao_estoque_model import MovimentacaoEstoqueModel
+from models.ordem_servico_model import OrdemServicoModel
+from models.produto_model import ProdutoModel
+from models.usuario_model import UsuarioModel
