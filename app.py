@@ -9,6 +9,7 @@ from controllers.login_controller import LoginController
 from controllers.dashboard_controller import DashboardController
 from controllers.produto_controller import ProdutoController
 from controllers.ordem_servico_controller import OrdemServicoController
+from controllers.fornecedor_controller import FornecedorController
 
 
 class EstoqueApp(ctk.CTk):
@@ -23,6 +24,7 @@ class EstoqueApp(ctk.CTk):
         self.login_controller = LoginController()
         self.dashboard_controller = DashboardController()
         self.produto_controller = ProdutoController()
+        self.fornecedor_controller = FornecedorController()
         self.usuario_logado = None
         self.login_view = LoginView(self, on_login=self._login)
         self.login_view.pack(fill="both", expand=True)
@@ -44,9 +46,19 @@ class EstoqueApp(ctk.CTk):
             "resumo_dashboard": self.dashboard_controller.resumo,
             "movimentacoes_recentes": self.dashboard_controller.movimentacoes_recentes,
             "estoque_por_categoria": self.dashboard_controller.estoque_por_categoria,
+
+            # PRODUTOS
             "salvar_produto": self._salvar_produto,
             "buscar_produto": self._buscar_produto,
             "listar_categorias": self.produto_controller.listar_categorias,
+
+            # FORNECEDORES
+            "salvar_fornecedor": self._salvar_fornecedor,
+            "atualizar_fornecedor": self._atualizar_fornecedor,
+            "excluir_fornecedor": self._excluir_fornecedor,
+            "listar_fornecedores": self._listar_fornecedores,
+
+            # ORDENS DE SERVIÇO
             "listar_ordens": self.ordem_controller.listar,
             "nova_ordem": self.ordem_controller.nova_ordem,
             "visualizar_ordem": self.ordem_controller.visualizar,
@@ -79,6 +91,24 @@ class EstoqueApp(ctk.CTk):
             messagebox.showinfo("Produtos cadastrados", "\n".join(linhas), parent=self)
         except Exception as exc:
             messagebox.showerror("Erro", str(exc), parent=self)
+
+    def _salvar_fornecedor(self, dados):
+        return self.fornecedor_controller.cadastrar(**dados)
+
+
+    def _atualizar_fornecedor(self, fornecedor_id, dados):
+        return self.fornecedor_controller.atualizar(
+            fornecedor_id,
+            **dados
+        )
+
+
+    def _excluir_fornecedor(self, fornecedor_id):
+        return self.fornecedor_controller.excluir(fornecedor_id)
+
+
+    def _listar_fornecedores(self):
+        return self.fornecedor_controller.listar()
 
     def _logout(self):
         self.main_view.destroy()
