@@ -10,7 +10,7 @@ from controllers.dashboard_controller import DashboardController
 from controllers.produto_controller import ProdutoController
 from controllers.ordem_servico_controller import OrdemServicoController
 from controllers.fornecedor_controller import FornecedorController
-
+from controllers.categoria_controller import CategoriaController
 
 class EstoqueApp(ctk.CTk):
     def __init__(self):
@@ -25,6 +25,7 @@ class EstoqueApp(ctk.CTk):
         self.dashboard_controller = DashboardController()
         self.produto_controller = ProdutoController()
         self.fornecedor_controller = FornecedorController()
+        self.categoria_controller = CategoriaController()
         self.usuario_logado = None
         self.login_view = LoginView(self, on_login=self._login)
         self.login_view.pack(fill="both", expand=True)
@@ -47,18 +48,18 @@ class EstoqueApp(ctk.CTk):
             "movimentacoes_recentes": self.dashboard_controller.movimentacoes_recentes,
             "estoque_por_categoria": self.dashboard_controller.estoque_por_categoria,
 
-            # PRODUTOS
+            # Produtos
             "salvar_produto": self._salvar_produto,
             "buscar_produto": self._buscar_produto,
             "listar_categorias": self.produto_controller.listar_categorias,
 
-            # FORNECEDORES
-            "salvar_fornecedor": self._salvar_fornecedor,
-            "atualizar_fornecedor": self._atualizar_fornecedor,
-            "excluir_fornecedor": self._excluir_fornecedor,
-            "listar_fornecedores": self._listar_fornecedores,
+            # Categorias
+            "salvar_categoria": self._salvar_categoria,
+            "atualizar_categoria": self._atualizar_categoria,
+            "excluir_categoria": self._excluir_categoria,
+            "listar_categorias_view": self._listar_categorias,
 
-            # ORDENS DE SERVIÇO
+            # Ordens de serviço
             "listar_ordens": self.ordem_controller.listar,
             "nova_ordem": self.ordem_controller.nova_ordem,
             "visualizar_ordem": self.ordem_controller.visualizar,
@@ -115,6 +116,77 @@ class EstoqueApp(ctk.CTk):
         self.usuario_logado = None
         self.login_view = LoginView(self, on_login=self._login)
         self.login_view.pack(fill="both", expand=True)
+
+    def _salvar_categoria(self, dados):
+        try:
+            categoria_id = self.categoria_controller.cadastrar(**dados)
+            messagebox.showinfo(
+                "Categorias",
+                f"Categoria cadastrada com sucesso! ID: {categoria_id}",
+                parent=self
+            )
+            return True
+
+        except Exception as exc:
+            messagebox.showerror(
+                "Erro ao cadastrar categoria",
+                str(exc),
+                parent=self
+            )
+            return False
+
+
+    def _atualizar_categoria(self, categoria_id, dados):
+        try:
+            resultado = self.categoria_controller.atualizar(
+                categoria_id,
+                **dados
+            )
+
+            if resultado:
+                messagebox.showinfo(
+                    "Categorias",
+                    "Categoria atualizada com sucesso!",
+                    parent=self
+                )
+                return True
+
+            return False
+
+        except Exception as exc:
+            messagebox.showerror(
+                "Erro ao atualizar categoria",
+                str(exc),
+                parent=self
+            )
+            return False
+
+
+    def _excluir_categoria(self, categoria_id):
+        try:
+            resultado = self.categoria_controller.excluir(categoria_id)
+
+            if resultado:
+                messagebox.showinfo(
+                    "Categorias",
+                    "Categoria excluída com sucesso!",
+                    parent=self
+                )
+                return True
+
+            return False
+
+        except Exception as exc:
+            messagebox.showerror(
+                "Erro ao excluir categoria",
+                str(exc),
+                parent=self
+            )
+            return False
+
+
+    def _listar_categorias(self):
+        return self.categoria_controller.listar()
 
 
 if __name__ == "__main__":

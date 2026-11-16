@@ -6,6 +6,7 @@ from .produtos_view import ProdutosView
 from .ordens_servico_view import OrdensServicoView
 from .placeholder_view import PlaceholderView
 from .fornecedores_view import FornecedoresView
+from .categorias_view import CategoriasView
 
 
 class MainView(ctk.CTkFrame):
@@ -63,6 +64,20 @@ class MainView(ctk.CTkFrame):
                     on_visualizar=self.callbacks.get("visualizar_ordem"),
                     on_editar=self.callbacks.get("editar_ordem"),
                     on_excluir=self.callbacks.get("excluir_ordem")
+                )
+
+            elif nome == "Categorias":
+                listar = self.callbacks.get("listar_categorias_view")
+
+                categorias = listar() if listar else []
+
+                view = CategoriasView(
+                    self.content,
+                    categorias=categorias,
+                    on_salvar=self.callbacks.get("salvar_categoria"),
+                    on_atualizar=self.callbacks.get("atualizar_categoria"),
+                    on_excluir=self.callbacks.get("excluir_categoria"),
+                    on_listar=listar
                 )
             elif nome == "Fornecedores":
                 listar = self.callbacks.get("listar_fornecedores")
