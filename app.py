@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 
+
 from conexao import conectar
 from views.theme import configure_appearance, COLORS
 from views.login_view import LoginView
@@ -11,6 +12,7 @@ from controllers.produto_controller import ProdutoController
 from controllers.ordem_servico_controller import OrdemServicoController
 from controllers.fornecedor_controller import FornecedorController
 from controllers.categoria_controller import CategoriaController
+from controllers.movimentacao_controller import MovimentacaoController
 
 class EstoqueApp(ctk.CTk):
     def __init__(self):
@@ -26,6 +28,7 @@ class EstoqueApp(ctk.CTk):
         self.produto_controller = ProdutoController()
         self.fornecedor_controller = FornecedorController()
         self.categoria_controller = CategoriaController()
+        self.movimentacao_controller = MovimentacaoController()
         self.usuario_logado = None
         self.login_view = LoginView(self, on_login=self._login)
         self.login_view.pack(fill="both", expand=True)
@@ -65,6 +68,11 @@ class EstoqueApp(ctk.CTk):
             "visualizar_ordem": self.ordem_controller.visualizar,
             "editar_ordem": self.ordem_controller.editar,
             "excluir_ordem": self.ordem_controller.excluir,
+
+            # Movimentações
+            "salvar_movimentacao": self._salvar_movimentacao,
+            "listar_movimentacoes": self._listar_movimentacoes,
+            "carregar_dados_movimentacao": self._carregar_dados_movimentacao,
         }
         self.main_view = MainView(self, on_logout=self._logout, callbacks=callbacks)
         self.main_view.pack(fill="both", expand=True)
@@ -188,6 +196,29 @@ class EstoqueApp(ctk.CTk):
     def _listar_categorias(self):
         return self.categoria_controller.listar()
 
+    def _salvar_movimentacao(self, dados):
+        try:
+            usuario_id = self.usuario_logado["id"]
+            return self.movimentacao_controller.cadastrar(
+                usuario_id, dados
+            )
+        except Exception as exc:
+            messagebox.showerror(
+                "Erro de movimentação", str(exc), parent=self
+            )
+            return False
+
+
+    def _listar_movimentacoes(self, termo=None):
+        return self.movimentacao_controller.listar(termo)
+
+
+    def _carregar_dados_movimentacao(self):
+        return {
+            "produtos": self.movimentacao_controller.listar_produtos(),
+            "fornecedores": self.movimentacao_controller.listar_fornecedores(),
+            "ordens": self.movimentacao_controller.listar_ordens_servico(),
+        }
 
 if __name__ == "__main__":
     app = EstoqueApp()

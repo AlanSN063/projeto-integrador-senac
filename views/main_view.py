@@ -7,6 +7,7 @@ from .ordens_servico_view import OrdensServicoView
 from .placeholder_view import PlaceholderView
 from .fornecedores_view import FornecedoresView
 from .categorias_view import CategoriasView
+from .movimentacoes_view import MovimentacoesView
 
 
 class MainView(ctk.CTkFrame):
@@ -89,6 +90,25 @@ class MainView(ctk.CTkFrame):
                     on_atualizar=self.callbacks.get("atualizar_fornecedor"),
                     on_excluir=self.callbacks.get("excluir_fornecedor"),
                     on_listar=listar
+                )
+            elif nome == "Movimentações":
+                auxiliares = self.callbacks["carregar_dados_movimentacao"]()
+
+                view = MovimentacoesView(
+                    self.content,
+
+                    produtos=auxiliares["produtos"],
+                    fornecedores=auxiliares["fornecedores"],
+                    ordens=auxiliares["ordens"],
+
+                    historico=self.callbacks["listar_movimentacoes"](),
+
+                    on_salvar=self.callbacks.get("salvar_movimentacao"),
+                    on_listar=self.callbacks.get("listar_movimentacoes"),
+
+                    on_carregar_auxiliares=self.callbacks.get(
+                        "carregar_dados_movimentacao"
+                    )
                 )
             else:
                 descricoes = {
