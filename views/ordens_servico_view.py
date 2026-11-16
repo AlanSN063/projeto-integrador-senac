@@ -14,11 +14,7 @@ class OrdensServicoView(ctk.CTkFrame):
         self.on_visualizar = on_visualizar or (lambda item_id: None)
         self.on_editar = on_editar or (lambda item_id: None)
         self.on_excluir = on_excluir or (lambda item_id: None)
-        self.ordens = ordens or [
-            ("OS-0001", "João Silva", "Toyota Corolla", "06/11/2026", "Aberta"),
-            ("OS-0002", "Maria Souza", "Honda Civic", "05/11/2026", "Em Andamento"),
-            ("OS-0003", "Carlos Lima", "Fiat Uno", "04/11/2026", "Concluída"),
-        ]
+        self.ordens = ordens if ordens is not None else []
 
         top = ctk.CTkFrame(self, fg_color="transparent")
         top.pack(fill="x", padx=22, pady=(22, 16))

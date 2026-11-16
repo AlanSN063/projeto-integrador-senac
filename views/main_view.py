@@ -33,20 +33,22 @@ class MainView(ctk.CTkFrame):
             if nome == "Início":
                 view = DashboardView(
                     self.content,
-                    resumo=self.callbacks.get("resumo_dashboard"),
-                    movimentacoes=self.callbacks.get("movimentacoes_recentes")
+                    resumo=self.callbacks["resumo_dashboard"]() if self.callbacks.get("resumo_dashboard") else {},
+                    movimentacoes=self.callbacks["movimentacoes_recentes"]() if self.callbacks.get("movimentacoes_recentes") else [],
+                    categorias_estoque=self.callbacks["estoque_por_categoria"]() if self.callbacks.get("estoque_por_categoria") else []
                 )
             elif nome == "Produtos":
                 view = ProdutosView(
                     self.content,
                     on_salvar=self.callbacks.get("salvar_produto"),
                     on_limpar=self.callbacks.get("limpar_produto"),
-                    on_buscar=self.callbacks.get("buscar_produto")
+                    on_buscar=self.callbacks.get("buscar_produto"),
+                    categorias=self.callbacks["listar_categorias"]() if self.callbacks.get("listar_categorias") else []
                 )
             elif nome == "Ordens de serviço":
                 view = OrdensServicoView(
                     self.content,
-                    ordens=self.callbacks.get("listar_ordens"),
+                    ordens=self.callbacks["listar_ordens"]() if self.callbacks.get("listar_ordens") else [],
                     on_nova_ordem=self.callbacks.get("nova_ordem"),
                     on_visualizar=self.callbacks.get("visualizar_ordem"),
                     on_editar=self.callbacks.get("editar_ordem"),

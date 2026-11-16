@@ -32,3 +32,15 @@ Movimentações	Entradas e saídas
 Usuários	Controle de acesso
 Relatórios	Indicadores e consultas
 Configurações	Ajustes do sistema
+
+## Integração dos Controllers e PostgreSQL
+
+1. Instale as dependências: `pip install -r requirements.txt`.
+2. Configure as variáveis `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` e `DB_PASSWORD` (os padrões atuais são localhost, 5432, projetoi, postgres e 123456).
+3. No pgAdmin, abra o banco `projetoi` e execute `database/migracao_senha_usuario.sql` e depois `database/dados_iniciais.sql`.
+4. No terminal, execute `python criar_usuario.py` para criar o primeiro usuário administrador com senha protegida por hash.
+5. Inicie com `python app.py`.
+
+As telas integradas nesta etapa são Login, Dashboard, Produtos e Ordens de Serviço. Fornecedores, Categorias, Movimentações, Usuários e Relatórios ainda usam telas de placeholder e serão integradas quando suas Views forem implementadas.
+
+Observação: o estoque atual é calculado pelas movimentações registradas em `movimentacao_estoque` e `item_movimentacao`. O cadastro de produto não cria saldo inicial automaticamente.

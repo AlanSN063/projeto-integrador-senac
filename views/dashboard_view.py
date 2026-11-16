@@ -4,7 +4,7 @@ from .components import PageHeader, MetricCard
 
 
 class DashboardView(ctk.CTkFrame):
-    def __init__(self, master, resumo=None, movimentacoes=None, **kwargs):
+    def __init__(self, master, resumo=None, movimentacoes=None, categorias_estoque=None, **kwargs):
         super().__init__(master, fg_color=COLORS["background"], **kwargs)
         self.grid_columnconfigure((0, 1), weight=1)
         self.grid_rowconfigure(2, weight=1)
@@ -42,13 +42,7 @@ class DashboardView(ctk.CTkFrame):
             text_color=COLORS["text"]
         ).pack(anchor="w", padx=16, pady=14)
 
-        rows = movimentacoes or [
-            ("06/11/2026 14:30", "Entrada", "Filtro de Óleo", "+50"),
-            ("06/11/2026 13:15", "Saída", "Pastilha de Freio", "-10"),
-            ("06/11/2026 11:20", "Entrada", "Óleo Motor", "+100"),
-            ("06/11/2026 10:45", "Saída", "Pneu 175/70R14", "-4"),
-            ("06/11/2026 09:30", "Entrada", "Bateria 60Ah", "+5"),
-        ]
+        rows = movimentacoes if movimentacoes is not None else []
         header = ctk.CTkFrame(recent, fg_color=COLORS["table_header"], corner_radius=5)
         header.pack(fill="x", padx=12)
         for col, title in enumerate(("Data", "Tipo", "Produto", "Qtd.")):
@@ -75,20 +69,20 @@ class DashboardView(ctk.CTkFrame):
             category, text="Estoque por Categoria", font=("Poppins", 15, "bold"),
             text_color=COLORS["text"]
         ).pack(anchor="w", padx=16, pady=14)
-        for name, percent, color in [
-            ("Peças Automotivas", "45%", COLORS["blue"]),
-            ("Acessórios", "30%", COLORS["dark_red"]),
-            ("Produtos Químicos", "15%", COLORS["graphite"]),
-            ("Outros", "10%", COLORS["charcoal"]),
-        ]:
+        cores = [COLORS["blue"], COLORS["dark_red"], COLORS["graphite"], COLORS["charcoal"]]
+        for indice, (name, saldo, proporcao) in enumerate(categorias_estoque or []):
+            color = cores[indice % len(cores)]
             line = ctk.CTkFrame(category, fg_color="transparent")
             line.pack(fill="x", padx=18, pady=10)
             ctk.CTkLabel(line, text="●", text_color=color, font=("Roboto", 17)).pack(side="left")
             ctk.CTkLabel(line, text=name, text_color=COLORS["text"],
                          font=FONTS["body"]).pack(side="left", padx=8)
-            ctk.CTkLabel(line, text=percent, text_color=COLORS["text"],
+            ctk.CTkLabel(line, text=f"{saldo} un.", text_color=COLORS["text"],
                          font=("Roboto", 12, "bold")).pack(side="right")
             bar = ctk.CTkProgressBar(category, height=8, corner_radius=4,
                                      progress_color=color, fg_color=COLORS["border"])
             bar.pack(fill="x", padx=(42, 22), pady=(0, 6))
-            bar.set(int(percent.rstrip("%")) / 100)
+            bar.set(proporcao)
+        if not categorias_estoque:
+            ctk.CTkLabel(category, text="Ainda não há saldo de estoque registrado.",
+                         text_color=COLORS["muted"], font=FONTS["body"]).pack(padx=18, pady=18)
