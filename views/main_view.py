@@ -8,8 +8,8 @@ from .placeholder_view import PlaceholderView
 from .fornecedores_view import FornecedoresView
 from .categorias_view import CategoriasView
 from .movimentacoes_view import MovimentacoesView
-
 from .usuarios_view import UsuariosView
+from .relatorios_view import RelatoriosView
 
 class MainView(ctk.CTkFrame):
     def __init__(self, master, on_logout=None, callbacks=None, **kwargs):
@@ -138,6 +138,14 @@ class MainView(ctk.CTkFrame):
                     on_listar=listar
                 )
 
+            elif nome == "Relatórios":
+
+                view = RelatoriosView(
+                    self.content,
+                    on_carregar=self.callbacks.get(
+                        "gerar_relatorio"
+                    )
+                )
 
             else:
                 descricoes = {

@@ -14,6 +14,7 @@ from controllers.fornecedor_controller import FornecedorController
 from controllers.categoria_controller import CategoriaController
 from controllers.movimentacao_controller import MovimentacaoController
 from controllers.usuario_controller import UsuarioController
+from controllers.relatorio_controller import RelatorioController
 
 class EstoqueApp(ctk.CTk):
     def __init__(self):
@@ -31,6 +32,7 @@ class EstoqueApp(ctk.CTk):
         self.categoria_controller = CategoriaController()
         self.movimentacao_controller = MovimentacaoController()
         self.usuario_controller = UsuarioController()
+        self.relatorio_controller = RelatorioController()
         self.usuario_logado = None
         self.login_view = LoginView(self, on_login=self._login)
         self.login_view.pack(fill="both", expand=True)
@@ -81,6 +83,9 @@ class EstoqueApp(ctk.CTk):
             "atualizar_usuario": self._atualizar_usuario,
             "desativar_usuario": self._desativar_usuario,
             "listar_usuarios": self._listar_usuarios,
+
+            # Relatórios
+            "gerar_relatorio": self._gerar_relatorio,
         }
         self.main_view = MainView(self, on_logout=self._logout, callbacks=callbacks)
         self.main_view.pack(fill="both", expand=True)
@@ -302,6 +307,13 @@ class EstoqueApp(ctk.CTk):
 
     def _listar_usuarios(self):
         return self.usuario_controller.listar()
+
+    # ==========================================
+    # RELATÓRIOS
+    # ==========================================
+
+    def _gerar_relatorio(self, tipo):
+        return self.relatorio_controller.gerar(tipo)
 
 
 if __name__ == "__main__":
