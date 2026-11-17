@@ -9,6 +9,7 @@ from .fornecedores_view import FornecedoresView
 from .categorias_view import CategoriasView
 from .movimentacoes_view import MovimentacoesView
 
+from .usuarios_view import UsuariosView
 
 class MainView(ctk.CTkFrame):
     def __init__(self, master, on_logout=None, callbacks=None, **kwargs):
@@ -110,6 +111,34 @@ class MainView(ctk.CTkFrame):
                         "carregar_dados_movimentacao"
                     )
                 )
+
+
+            elif nome == "Usuários":
+
+                listar = self.callbacks.get("listar_usuarios")
+
+                usuarios = listar() if listar else []
+
+                view = UsuariosView(
+                    self.content,
+                    usuarios=usuarios,
+
+                    on_salvar=self.callbacks.get(
+                        "salvar_usuario"
+                    ),
+
+                    on_atualizar=self.callbacks.get(
+                        "atualizar_usuario"
+                    ),
+
+                    on_excluir=self.callbacks.get(
+                        "desativar_usuario"
+                    ),
+
+                    on_listar=listar
+                )
+
+
             else:
                 descricoes = {
                     "Categorias": "Organização e manutenção das categorias.",

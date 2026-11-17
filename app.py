@@ -13,6 +13,7 @@ from controllers.ordem_servico_controller import OrdemServicoController
 from controllers.fornecedor_controller import FornecedorController
 from controllers.categoria_controller import CategoriaController
 from controllers.movimentacao_controller import MovimentacaoController
+from controllers.usuario_controller import UsuarioController
 
 class EstoqueApp(ctk.CTk):
     def __init__(self):
@@ -29,6 +30,7 @@ class EstoqueApp(ctk.CTk):
         self.fornecedor_controller = FornecedorController()
         self.categoria_controller = CategoriaController()
         self.movimentacao_controller = MovimentacaoController()
+        self.usuario_controller = UsuarioController()
         self.usuario_logado = None
         self.login_view = LoginView(self, on_login=self._login)
         self.login_view.pack(fill="both", expand=True)
@@ -73,6 +75,12 @@ class EstoqueApp(ctk.CTk):
             "salvar_movimentacao": self._salvar_movimentacao,
             "listar_movimentacoes": self._listar_movimentacoes,
             "carregar_dados_movimentacao": self._carregar_dados_movimentacao,
+
+            # Usuários
+            "salvar_usuario": self._salvar_usuario,
+            "atualizar_usuario": self._atualizar_usuario,
+            "desativar_usuario": self._desativar_usuario,
+            "listar_usuarios": self._listar_usuarios,
         }
         self.main_view = MainView(self, on_logout=self._logout, callbacks=callbacks)
         self.main_view.pack(fill="both", expand=True)
@@ -111,7 +119,6 @@ class EstoqueApp(ctk.CTk):
             **dados
         )
 
-
     def _excluir_fornecedor(self, fornecedor_id):
         return self.fornecedor_controller.excluir(fornecedor_id)
 
@@ -142,7 +149,6 @@ class EstoqueApp(ctk.CTk):
                 parent=self
             )
             return False
-
 
     def _atualizar_categoria(self, categoria_id, dados):
         try:
@@ -219,6 +225,84 @@ class EstoqueApp(ctk.CTk):
             "fornecedores": self.movimentacao_controller.listar_fornecedores(),
             "ordens": self.movimentacao_controller.listar_ordens_servico(),
         }
+
+
+    # ==========================================
+    # USUÁRIOS
+    # ==========================================
+
+    def _salvar_usuario(self, dados):
+        try:
+            usuario_id = self.usuario_controller.cadastrar(dados)
+
+            messagebox.showinfo(
+                "Usuários",
+                f"Usuário cadastrado com sucesso! ID: {usuario_id}",
+                parent=self
+            )
+
+            return True
+
+        except Exception as exc:
+            messagebox.showerror(
+                "Erro ao cadastrar usuário",
+                str(exc),
+                parent=self
+            )
+            return False
+
+    def _atualizar_usuario(self, usuario_id, dados):
+        try:
+            resultado = self.usuario_controller.atualizar(
+                usuario_id,
+                dados
+            )
+
+            if resultado:
+                messagebox.showinfo(
+                    "Usuários",
+                    "Usuário atualizado com sucesso!",
+                    parent=self
+                )
+                return True
+
+            return False
+
+        except Exception as exc:
+            messagebox.showerror(
+                "Erro ao atualizar usuário",
+                str(exc),
+                parent=self
+            )
+            return False
+
+    def _desativar_usuario(self, usuario_id):
+        try:
+            resultado = self.usuario_controller.desativar(
+                usuario_id
+            )
+
+            if resultado:
+                messagebox.showinfo(
+                    "Usuários",
+                    "Usuário desativado com sucesso!",
+                    parent=self
+                )
+                return True
+
+            return False
+
+        except Exception as exc:
+            messagebox.showerror(
+                "Erro ao desativar usuário",
+                str(exc),
+                parent=self
+            )
+            return False
+
+    def _listar_usuarios(self):
+        return self.usuario_controller.listar()
+
 
 if __name__ == "__main__":
     app = EstoqueApp()

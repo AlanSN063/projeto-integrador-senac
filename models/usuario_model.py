@@ -11,6 +11,27 @@ class UsuarioModel(BaseModel):
     tabela = "usuario"
     campos = ("nome", "login", "cargo", "ativo", "senha_hash")
 
+
+    def listar(self):
+        conexao = conectar()
+
+        try:
+            with conexao.cursor(
+                cursor_factory=RealDictCursor
+            ) as cursor:
+
+                cursor.execute("""
+                    SELECT id, nome, login, cargo, ativo
+                    FROM usuario
+                    ORDER BY id
+                """)
+
+                return cursor.fetchall()
+
+        finally:
+            conexao.close()
+
+
     @staticmethod
     def gerar_hash(senha):
         salt = os.urandom(16)
