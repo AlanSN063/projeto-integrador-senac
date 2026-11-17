@@ -42,7 +42,7 @@ class CategoriasView(ctk.CTkFrame):
             self,
             "Categorias",
             "Cadastre e organize as categorias dos produtos",
-            "layers"
+            "tags"
         ).pack(fill="x", padx=22, pady=(22, 16))
 
         conteudo = ctk.CTkFrame(

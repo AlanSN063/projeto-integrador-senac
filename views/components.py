@@ -47,11 +47,11 @@ class Sidebar(ctk.CTkFrame):
         ("Fornecedores", "truck"), ("Categorias", "tags"),
         ("Ordens de serviço", "wrench"), ("Movimentações", "arrows"),
         ("Usuários", "users"), ("Relatórios", "chart"),
-        ("Configurações", "settings"),
     ]
 
     def __init__(self, master, on_navigate, on_logout=None):
-        super().__init__(master, width=205, corner_radius=0, fg_color=COLORS["navy"])
+        super().__init__(master, width=205,
+                         corner_radius=0, fg_color=COLORS["navy"])
         self.grid_propagate(False)
         self.on_navigate = on_navigate
         self.buttons = {}
@@ -81,7 +81,8 @@ class Sidebar(ctk.CTkFrame):
             button.pack(fill="x", padx=10, pady=3)
             self.buttons[label] = button
 
-        ctk.CTkFrame(self, fg_color="transparent").pack(expand=True, fill="both")
+        ctk.CTkFrame(self, fg_color="transparent").pack(
+            expand=True, fill="both")
         ctk.CTkButton(
             self, text="  Sair", image=get_icon("logout", COLORS["white"], 19),
             compound="left", anchor="w", height=42,

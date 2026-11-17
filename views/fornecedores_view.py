@@ -173,7 +173,6 @@ class FornecedoresView(ctk.CTkFrame):
             acoes,
             text="Salvar fornecedor",
             height=38,
-            fg_color=COLORS["blue"],
             hover_color=COLORS["blue_hover"],
             font=FONTS["button"],
             command=self._salvar
