@@ -34,6 +34,9 @@ class MainView(ctk.CTkFrame):
         for view in self.views.values():
             view.grid_forget()
 
+        if nome in self.views and nome in ("Produtos", "Fornecedores"):
+            self.views[nome].atualizar_lista()
+
         if nome not in self.views:
 
             if nome == "Início":
@@ -53,6 +56,7 @@ class MainView(ctk.CTkFrame):
                     on_salvar=self.callbacks.get("salvar_produto"),
                     on_limpar=self.callbacks.get("limpar_produto"),
                     on_buscar=self.callbacks.get("buscar_produto"),
+                    on_listar=self.callbacks.get("listar_produtos"),
                     categorias=self.callbacks["listar_categorias"]()
                     if self.callbacks.get("listar_categorias") else []
                 )

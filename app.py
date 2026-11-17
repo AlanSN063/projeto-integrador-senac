@@ -22,6 +22,7 @@ class EstoqueApp(ctk.CTk):
         configure_appearance()
         self.title("Controle de Estoque")
         self.geometry("1360x820")
+        self.after(0, lambda: self.state("zoomed"))
         self.minsize(1050, 680)
         self.configure(fg_color=COLORS["background"])
 
@@ -58,6 +59,11 @@ class EstoqueApp(ctk.CTk):
             # Produtos
             "salvar_produto": self._salvar_produto,
             "buscar_produto": self._buscar_produto,
+            "listar_produtos": self.produto_controller.listar,
+            "salvar_fornecedor": self._salvar_fornecedor,
+            "atualizar_fornecedor": self._atualizar_fornecedor,
+            "excluir_fornecedor": self._excluir_fornecedor,
+            "listar_fornecedores": self._listar_fornecedores,
             "listar_categorias": self.produto_controller.listar_categorias,
 
             # Categorias

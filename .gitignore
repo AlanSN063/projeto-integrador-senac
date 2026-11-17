@@ -174,3 +174,4 @@ poesia.toml
 pyrightconfig.json
 
 # Fim de https://www.toptal.com/developers/gitignore/api/python
+/.alan

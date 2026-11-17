@@ -135,7 +135,7 @@ class MovimentacoesView(ctk.CTkFrame):
         painel = ctk.CTkFrame(master, corner_radius=10)
         painel.grid(row=1, column=0, sticky="nsew")
         painel.grid_columnconfigure(0, weight=1)
-        painel.grid_rowconfigure(2, weight=1)
+        painel.grid_rowconfigure(3, weight=1)
 
         ctk.CTkLabel(
             painel, text="Histórico de movimentações",
@@ -155,11 +155,19 @@ class MovimentacoesView(ctk.CTkFrame):
             command=self._buscar
         ).grid(row=0, column=1)
 
+        self.resumo_historico = ctk.CTkLabel(
+            painel, text="", font=("Roboto", 12),
+            text_color=("#64748B", "#94A3B8"), anchor="w"
+        )
+        self.resumo_historico.grid(
+            row=2, column=0, sticky="ew", padx=18, pady=(0, 6)
+        )
+
         self.historico_frame = ctk.CTkScrollableFrame(
-            painel, fg_color="transparent"
+            painel, fg_color="transparent", corner_radius=0
         )
         self.historico_frame.grid(
-            row=2, column=0, sticky="nsew", padx=12, pady=(0, 12)
+            row=3, column=0, sticky="nsew", padx=12, pady=(0, 12)
         )
         self.historico_frame.grid_columnconfigure(0, weight=1)
 
@@ -348,31 +356,136 @@ class MovimentacoesView(ctk.CTkFrame):
             self.historico = self.on_listar(None)
             self._renderizar_historico(self.historico)
 
+    @staticmethod
+    def _texto_historico(valor, padrao="—"):
+        texto = str(valor).strip() if valor is not None else ""
+        return texto or padrao
+
     def _renderizar_historico(self, registros):
+        """Mostra cada operação em um cartão com informações hierarquizadas."""
         for widget in self.historico_frame.winfo_children():
             widget.destroy()
+
+        total = len(registros)
+        entradas = sum(1 for reg in registros if reg.get("tipo") == "ENTRADA")
+        saidas = sum(1 for reg in registros if reg.get("tipo") == "SAIDA")
+        self.resumo_historico.configure(
+            text=f"{total} movimentação(ões) encontrada(s)   •   "
+                 f"{entradas} entrada(s)   •   {saidas} saída(s)"
+        )
+
         if not registros:
+            vazio = ctk.CTkFrame(
+                self.historico_frame, fg_color=("#FFFFFF", "#292929"),
+                corner_radius=10, border_width=1,
+                border_color=("#E2E8F0", "#414141")
+            )
+            vazio.grid(row=0, column=0, sticky="ew", pady=7)
             ctk.CTkLabel(
-                self.historico_frame, text="Nenhuma movimentação encontrada.",
-                text_color="gray"
-            ).grid(row=0, column=0, pady=18)
+                vazio, text="Nenhuma movimentação encontrada",
+                font=("Poppins", 15, "bold")
+            ).pack(pady=(24, 4))
+            ctk.CTkLabel(
+                vazio, text="Registre uma movimentação ou altere o termo da pesquisa.",
+                text_color=("#64748B", "#A3A3A3")
+            ).pack(pady=(0, 24))
             return
 
         for indice, registro in enumerate(registros):
-            data = registro["data_movimentacao"]
-            data_texto = data.strftime("%d/%m/%Y %H:%M") if hasattr(data, "strftime") else str(data)
-            texto = (
-                f'#{registro["id"]} | {registro["tipo"]} - {registro["motivo"]} | '
-                f'{data_texto}\n'
-                f'Produtos: {registro["itens"] or "—"}\n'
-                f'Usuário: {registro["usuario_nome"]} | '
-                f'Fornecedor: {registro["fornecedor_nome"] or "—"} | '
-                f'OS: {registro["ordem_numero"] or "—"}'
+            tipo = str(registro.get("tipo") or "").upper()
+            entrada = tipo == "ENTRADA"
+            destaque = "#15803D" if entrada else "#C2410C"
+            fundo_destaque = "#DCFCE7" if entrada else "#FFEDD5"
+            tipo_legivel = "ENTRADA" if entrada else "SAÍDA"
+            data = registro.get("data_movimentacao")
+            data_texto = (
+                data.strftime("%d/%m/%Y às %H:%M")
+                if hasattr(data, "strftime") else self._texto_historico(data)
             )
-            card = ctk.CTkFrame(self.historico_frame, corner_radius=7)
-            card.grid(row=indice, column=0, sticky="ew", pady=4)
+
+            card = ctk.CTkFrame(
+                self.historico_frame, corner_radius=10, border_width=1,
+                fg_color=("#FFFFFF", "#292929"),
+                border_color=("#E2E8F0", "#414141")
+            )
+            card.grid(row=indice, column=0, sticky="ew", pady=(0, 9), padx=3)
             card.grid_columnconfigure(0, weight=1)
+
+            topo = ctk.CTkFrame(card, fg_color="transparent")
+            topo.grid(row=0, column=0, sticky="ew", padx=14, pady=(12, 8))
+            topo.grid_columnconfigure(1, weight=1)
+
             ctk.CTkLabel(
-                card, text=texto, justify="left", anchor="w",
-                wraplength=900
-            ).grid(row=0, column=0, sticky="ew", padx=10, pady=8)
+                topo, text=f"  {tipo_legivel}  ",
+                fg_color=fundo_destaque, text_color=destaque,
+                corner_radius=6, font=("Roboto", 12, "bold"), height=27
+            ).grid(row=0, column=0, sticky="w", padx=(0, 12))
+            ctk.CTkLabel(
+                topo, text=f"Movimentação #{self._texto_historico(registro.get('id'))}",
+                font=("Poppins", 14, "bold"), anchor="w"
+            ).grid(row=0, column=1, sticky="ew")
+            ctk.CTkLabel(
+                topo, text=data_texto, font=("Roboto", 12),
+                text_color=("#64748B", "#A3A3A3"), anchor="e"
+            ).grid(row=0, column=2, sticky="e", padx=(8, 0))
+
+            ctk.CTkFrame(
+                card, fg_color=("#E2E8F0", "#444444"), height=1
+            ).grid(row=1, column=0, sticky="ew", padx=14)
+
+            conteudo = ctk.CTkFrame(card, fg_color="transparent")
+            conteudo.grid(row=2, column=0, sticky="ew", padx=14, pady=(10, 12))
+            conteudo.grid_columnconfigure(0, weight=3)
+            conteudo.grid_columnconfigure(1, weight=2)
+
+            ctk.CTkLabel(
+                conteudo, text="PRODUTOS MOVIMENTADOS",
+                font=("Roboto", 10, "bold"),
+                text_color=("#64748B", "#A3A3A3"), anchor="w"
+            ).grid(row=0, column=0, sticky="w")
+            ctk.CTkLabel(
+                conteudo, text="MOTIVO",
+                font=("Roboto", 10, "bold"),
+                text_color=("#64748B", "#A3A3A3"), anchor="w"
+            ).grid(row=0, column=1, sticky="w", padx=(16, 0))
+
+            itens = self._texto_historico(registro.get("itens"))
+            ctk.CTkLabel(
+                conteudo, text=itens, font=("Roboto", 13),
+                anchor="w", justify="left", wraplength=640
+            ).grid(row=1, column=0, sticky="ew", pady=(3, 10))
+            ctk.CTkLabel(
+                conteudo, text=self._texto_historico(registro.get("motivo")).replace("_", " "),
+                font=("Roboto", 13, "bold"), anchor="w"
+            ).grid(row=1, column=1, sticky="nw", padx=(16, 0), pady=(3, 10))
+
+            detalhes = (
+                ("QUANTIDADE", str(registro.get("quantidade_total") or 0)),
+                ("RESPONSÁVEL", self._texto_historico(registro.get("usuario_nome"))),
+                ("FORNECEDOR", self._texto_historico(registro.get("fornecedor_nome"))),
+                ("ORDEM DE SERVIÇO", self._texto_historico(registro.get("ordem_numero"))),
+            )
+            rodape = ctk.CTkFrame(
+                conteudo, fg_color=("#F1F5F9", "#363636"), corner_radius=7
+            )
+            rodape.grid(row=2, column=0, columnspan=2, sticky="ew")
+            for coluna, (rotulo, valor) in enumerate(detalhes):
+                rodape.grid_columnconfigure(coluna, weight=1)
+                bloco = ctk.CTkFrame(rodape, fg_color="transparent")
+                bloco.grid(row=0, column=coluna, sticky="ew", padx=10, pady=8)
+                ctk.CTkLabel(
+                    bloco, text=rotulo, font=("Roboto", 10, "bold"),
+                    text_color=("#64748B", "#A3A3A3"), anchor="w"
+                ).pack(fill="x")
+                ctk.CTkLabel(
+                    bloco, text=valor, font=("Roboto", 12), anchor="w",
+                    wraplength=235, justify="left"
+                ).pack(fill="x", pady=(2, 0))
+
+            observacao = self._texto_historico(registro.get("observacao"), "")
+            if observacao:
+                ctk.CTkLabel(
+                    card, text=f"Observação: {observacao}",
+                    font=("Roboto", 12), justify="left", anchor="w",
+                    wraplength=1000, text_color=("#64748B", "#A3A3A3")
+                ).grid(row=3, column=0, sticky="ew", padx=14, pady=(0, 12))
